@@ -28,15 +28,18 @@ This is a beginer-level workshop and does not require any prior programming know
 - A WiFi Connection
 - If you're new to R and Python, don't worry we have built the files and material that will allow you to visualise and play with the code for this class.
 
+
 ### Working with R
 
 For [R](https://www.r-project.org/) users, we will use [R Studio](https://posit.co/).
 
-To attend the class, simply click on the banner below and log in via a Google account to set up in RStudio Online.
+To attend this class you can either set up your account in RStudio Online or run the course material on your laptop if you have R Studio installed already:
+
+- Sign up without download: click on the banner below and log in via a Google account to set up in RStudio Online.
 
 ![RStudioCloud](https://github.com/DCS-training/OCR/raw/main/PositLogo.png)
 
-Alternatively, if you want to download the material to your laptop, you can find all materials needed for this class in [this folder](https://github.com/DCS-training/OCR/tree/main/WorkingWithR). Note that you'll need to download the entire repository rather than individual folders.
+- Course material and data: [Download here](https://github.com/DCS-training/OCR/tree/main/WorkingWithR) 
 
 ### **Working with Python**
 
