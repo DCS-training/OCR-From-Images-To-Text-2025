@@ -31,21 +31,22 @@ This is a beginer-level workshop and does not require any prior programming know
 
 ### Working with R
 
-For [R](https://www.r-project.org/) users, we will use [R Studio](https://posit.co/).
-
 To attend this class you can either set up your account in RStudio Online or run the course material on your laptop if you have R Studio installed already:
 
-- Sign up without download: click on the banner below and log in via a Google account to set up in RStudio Online.
+- Set up account for Rstudio Online: click on the link below and log in via a Google account to set up in RStudio Online.
 
-![RStudioCloud](https://github.com/DCS-training/OCR/raw/main/PositLogo.png)
-
-- Course material and data: [Download here](https://github.com/DCS-training/OCR/tree/main/WorkingWithR) 
+- [Download course material for R: ](TBC) 
 
 ### **Working with Python**
 
-For [Python](https://www.python.org/) users, we will use Google Colab.
+To attend the class, please log in via a google account. 
 
-To attend the class, simply clink on the banner below and log in via a google account. You can find all the material that you will need for this class in [this Folder](https://github.com/DCS-training/OCR/tree/main/WorkingWithPython). If you’d like to download and edit the files or code, please log into Google Colab and select the 'Copy to Drive' option to download and edit.
+- Log in to Google Colab: 
+[![Google Colab](https://camo.githubusercontent.com/96889048f8a9014fdeba2a891f97150c6aac6e723f5190236b10215a97ed41f3/68747470733a2f2f636f6c61622e72657365617263682e676f6f676c652e636f6d2f6173736574732f636f6c61622d62616467652e737667)](https://colab.research.google.com/github/peiyulan/From-Images-to-Text-Working-with-OCR/blob/main/ImageToTextOCR.ipynb)
+If you’d like to download and edit the files or code, please log into Google Colab and select the 'Copy to Drive' option to download and edit.
+
+- [Download course material for Python: ](https://github.com/DCS-training/OCR-From-Images-To-Text-2025/tree/245721a63df4a4af296535bcad62de26026ba731/Working%20with%20Python)
+
 
 ## **License and Authors**
 
