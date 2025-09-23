@@ -39,12 +39,10 @@ To attend this class you can either set up your account in RStudio Online or run
 
 ### **Working with Python**
 
-To attend the class, please log in via a google account. 
+To attend the class, please log in via a google account. If you’d like to download and edit the files or code, please log into Google Colab and select the 'Copy to Drive' option to download and edit.
 
 - Log in to Google Colab: 
 [![Google Colab](https://camo.githubusercontent.com/96889048f8a9014fdeba2a891f97150c6aac6e723f5190236b10215a97ed41f3/68747470733a2f2f636f6c61622e72657365617263682e676f6f676c652e636f6d2f6173736574732f636f6c61622d62616467652e737667)](https://colab.research.google.com/github/peiyulan/From-Images-to-Text-Working-with-OCR/blob/main/ImageToTextOCR.ipynb)
-
-If you’d like to download and edit the files or code, please log into Google Colab and select the 'Copy to Drive' option to download and edit.
 
 - [Download course material for Python: ](https://github.com/DCS-training/OCR-From-Images-To-Text-2025/tree/245721a63df4a4af296535bcad62de26026ba731/Working%20with%20Python)
 
