@@ -37,10 +37,14 @@ To attend this class you can either set up your account in RStudio Online or run
 
 <div style="width: 60%; height: 60%">
   
- [![RStudioCloud](https://github.com/DCS-training/OCR/blob/main/PositLogo.png)](https://posit.cloud/content/5337260)
+ [![RStudioCloud](https://github.com/DCS-training/OCR/blob/main/PositLogo.png)](https://posit.cloud)
   
 </div>
-- [Download course material for R ](https://github.com/DCS-training/OCR-From-Images-To-Text-2025/tree/main/Working%20with%20R) 
+
+- Once you have signed in, start a new project from the git Repository (upper right corner), and copy paste the following link to load the project:
+ https://github.com/DCS-training/OCR-From-Images-To-Text-2025
+ 
+- [Download course material for R](https://github.com/DCS-training/OCR-From-Images-To-Text-2025/tree/main/Working%20with%20R) 
 
 ### **Working with Python**
 
