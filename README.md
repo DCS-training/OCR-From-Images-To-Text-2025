@@ -35,7 +35,12 @@ To attend this class you can either set up your account in RStudio Online or run
 
 - Set up account for Rstudio Online: click on the link below and log in via a Google account to set up in RStudio Online.
 
-- [Download course material for R ](TBC) 
+<div style="width: 60%; height: 60%">
+  
+ [![RStudioCloud](https://github.com/DCS-training/OCR/blob/main/PositLogo.png)](https://posit.cloud/content/5337260)
+  
+</div>
+- [Download course material for R ](https://github.com/DCS-training/OCR-From-Images-To-Text-2025/tree/main/Working%20with%20R) 
 
 ### **Working with Python**
 
@@ -44,7 +49,7 @@ To attend the class, please log in via a google account. If you’d like to down
 - Log in to Google Colab: 
 [![Google Colab](https://camo.githubusercontent.com/96889048f8a9014fdeba2a891f97150c6aac6e723f5190236b10215a97ed41f3/68747470733a2f2f636f6c61622e72657365617263682e676f6f676c652e636f6d2f6173736574732f636f6c61622d62616467652e737667)](https://colab.research.google.com/github/peiyulan/From-Images-to-Text-Working-with-OCR/blob/main/ImageToTextOCR.ipynb)
 
-- [Download course material for Python ](https://github.com/DCS-training/OCR-From-Images-To-Text-2025/tree/245721a63df4a4af296535bcad62de26026ba731/Working%20with%20Python)
+- [Download course material for Python ](https://github.com/DCS-training/OCR-From-Images-To-Text-2025/tree/main/Working%20with%20Python)
 
 
 ## **License and Authors**
