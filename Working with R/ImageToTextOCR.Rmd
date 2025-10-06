@@ -1,0 +1,615 @@
+---
+title: "ImageToTextOCR"
+author: "Lucia Michielin"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Welcome: From Images to Text: Working with OCR
+
+## Overview
+
+This course provides an overview of Optical Character Recognition (OCR), an image processing technique for extracting text from images.
+
+The resource covers the following sections to help you learn and start to apply OCR in research practice:
+
+-   What is text extraction and OCR?
+-   What are the real-world application of OCR?
+-   What challenges might you face when using OCR and how can you address them?
+
+We will learn the fundamental concepts and implement OCR techniques through the following activities:
+
+-   Activity 1: Write down your OCR Workflow
+-   Activity 2: Inspect the Files
+-   Activity 3: Online OCR Engine
+-   Activity 4: Clean Your Text with Regex
+-   Activity 5: OCR Tesseract Module with Python or R
+-   Activity 6: HTR Handwritten Text Recognition
+
+> 👋 New to Rstudio and Markdown? No worries! Let's get you started by running the code snippet below to make sure everything is working properly for you. It's a great way to take your first steps into coding!
+
+```{r code, echo=FALSE}
+name <- "Change this to your name"
+
+cat("Hello",name,"welcome to the CDCS Image to Text with OCR workshop!\n")
+
+```
+
+# What is OCR?
+
+## **O**ptical **C**haracter **R**ecognition
+
+-   OCR is a technique to process images of text, such as written or printed documents, and produce **machine-readable** documents.
+-   Machine-readable documents are encoded in formats that computers can process, which allow the text to be searched, edited and analysed computationally
+
+## Real-world examples of OCR
+
+-   Scanning your passport at the airport
+-   Generate machine-readable text for text-to-speech technology.
+-   Making digitised physical archives searchable.
+-   Creating a dataset of for text mining or text analysis.
+
+## OCR Workflow
+
+OCR is a multi-step process and we'll examine this as we move through the lesson.
+
+1.  **Document selection**: An image or text document needs to be selected to scan.
+2.  **Scanning**: The images are then scanned by OCR software. This generates a machine-readable text output.
+3.  **Cleaning** :Once you have an OCR output, extra steps to clean the files might be need to improve accuracy.
+4.  **Saving files**: the machine-readable documents can be saved and are to use.
+
+## ✏️ *Activity 1: Write Down Your OCR Workflow*
+
+-   Identify a dataset (images of text) that you might use in your research.
+
+-   Write the steps to obtained encoded text from your dataset.
+
+-   Identify potential source of errors or issues in each step, and discuss how you might address them.
+
+-   Share your dataset, workflow, and plan with your small group.
+
+# **Challange and Error of OCR**
+
+Unfortunately, text recognition is not a perfect process, and you are likely to encounter problems or errors in the text outputs.
+
+The accuracy of OCR can be limited by the **OCR engine capability**:
+
+-   file size
+-   format of the input files
+-   text orientation
+-   language it can process
+
+It also depends on **dataset quality, formatting of the original documents:**
+
+-   Human errors and typos
+-   Age and damage (stained or blurry)
+-   Mixed text and images, or multiple languages
+-   Cursive handwriting
+
+# **Ways to improve OCR accuracy**
+
+While the accuracy or OCR will never be 100%, there are ways to reduce errors and improve OCR accuracy:
+
+-   Select good quality dataset to begin with
+
+-   Pre-process your dataset to improve its quality
+
+-   Correct errors in OCR-produced files
+
+-   Improve OCR engine capability
+
+# Dataset Selection
+
+Selecting good quality data to start with means that you don’t need to edit and process your image too much from the beginning. Key considerations include:
+
+**Image resolution**
+
+Set a minimum DPI metric. DPI means ‘Dots Per Inch’ and means that every inch of an image contains a certain number of dots of ink. 300 DPI is often used as a benchmark for good quality printing reproducibility for photographs, but this may vary.
+
+**Types of error**
+
+By checking the documents or sample documents, you can identify the patterns documents that might cause errors during scanning and reduce the work required for clearing the files afterwards.
+
+Some "patterned" or "predictable" error can be fixed computationally using software or programming patches:
+
+-   **Characters that appear similar** can be mis-recognised, for example ‘cl’ and ‘d’, or ‘rn’ and ‘m’, which results in the incorrect substitution of a letter or letters. E.g. ‘clean’ becomes recognised as ‘dean’.
+-   **Different letter forms**, such as in some older historical materials a different form of 's' is used. This is called a long s and looks like this 'ſ', which is often mis-recognised as an 'f' character. E.g. ſleeve [sleeve] -\> fleeve
+
+Some error is unpredictable and therefore more difficult to be tackled, such as:
+
+-   Age and damage of the files (stained or blurry)
+
+-   Human error such as typo​s and smelling variations
+
+-   Mixed formatting, text and images
+
+-   Cursive handwriting​
+
+## ✏️ *Activity 2: Inspect the Files*
+
+-   Identify issues you might encounter when processing the following documents. ​
+-   Are there any steps you could take to preprocessing the document that might improve the output accuracy?​
+
+​
+
+![](https://github.com/DCS-training/Image-to-Tech-Text-Extraction/blob/main/Github%20Images/Image1.jpg?raw=true)
+
+Document 1: image above from the Scottish Session Papers collection held by the University of Edinburgh, shelfmark [EUL0011](https://librarylabs.ed.ac.uk/iiif/uv/?manifest=https://librarylabs.ed.ac.uk/iiif/manifest/sessionpapers/volumes/EUL0011.json#?c=0&m=0&s=0&cv=21&xywh=-510%2C0%2C9022%2C5263) under a [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) licence.
+
+![](https://github.com/DCS-training/Image-to-Tech-Text-Extraction/blob/main/Github%20Images/Image2.jpg?raw=true)
+
+Document 2: image above from the Scottish Session Papers collection held by the University of Edinburgh, shelfmark [EUL0281](https://librarylabs.ed.ac.uk/iiif/uv/?manifest=https://librarylabs.ed.ac.uk/iiif/manifest/sessionpapers/volumes/EUL0281.json#?c=0&m=0&s=0&cv=0&xywh=-2584%2C-252%2C8636%2C5038) under a [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) licence.
+
+# **Pre-processing**
+
+Once you identify the dataset, preparing your files for scanning can help to produce better outputs after scanning. There are a few ways to do this:
+
+**Image colour**
+
+The colour of your images can impact text quality too; colour images can be used, but ensure there is a sharp contrast between the background page and the text itself (for example black text on white or cream paper). **Text orientation:** The orientation of your text is also important in text recognition as the letters that your OCR engine tries to match against will be the ‘right’ way up and straight on the page, so making sure that the text in the documents you upload is ‘straight on’ in the document or image will produce the best results.
+
+**File format:**
+
+Some OCR engines will only accept certain file formats, so it is best to check this in advance; some will only use image files, whereas others will work on PDF files. Common image file types are TIFF, JPEG and PNG.
+
+TIFF files are lossless files, meaning that no image quality or information is lost; this means that TIFF images are usually high quality but also much larger file sizes. PNGs are also lossless, although TIFF files would be preferred over PNGs for OCR.
+
+JPEGs are a lossy format type, meaning that the image is compressed to create a smaller file size. OCR engines can work with JPEGs, but there may be a loss of image quality that can impact the text generation.
+
+## ✏️ *Activity 3: Online OCR Engine*
+
+Choose a pdf that contains text and try uploading it into some of these online programmes:
+
+-   <https://tools.pdf24.org/en/ocr-pdf>
+
+-   <https://www.onlineocr.net/>
+
+-   <https://www.sodapdf.com/ocr-pdf/>
+
+-   <https://www.sejda.com/ocr-pdf>
+
+-   <https://ocr.space/>
+
+-   <https://avepdf.com/pdf-ocr>
+
+Compare your results - which performed best? What are the limitations of these options?
+
+# **Cleaning**
+
+**Manually remove errors**
+
+Read through the text and manually change what needs to be changed – this is one option to create a high-quality text with your corrections, however, it can be time and effort consuming
+
+**Patches and Machine Learning techniques**: Certain software have an embedded lexicon or dictionary that can be used to identify incorrect vocabulary and correct likely words based on the lexicon and calculated probability of correct words.
+
+**Regex**
+
+Regex (or regular expressions) is a type of shorthand code you can use to specify which parts of text you would like to target and how you would like to change these.
+
+OCR has been developing at a significant rate over the past twenty years and newer OCR is faster and more accurate than older software, but it is still liable to errors.
+
+## Regex (Regular Expressions)
+
+Regular expressions or regex are a way to identify and match patterns via code and is used in a range of different programming environments.
+
+Regex is a powerful way to find, manage and transform your data and files. It uses sequences of characters to define a search to match strings. You can use regex to:
+
+-   Match types of characters (e.g. ‘upper case letters’, ‘digits’, ‘spaces’, etc.)
+
+-   Match patterns that repeat any number of times
+
+There are far too many to remember off the top of your head, so online cheat sheets are your best option.
+
+Check out the following webpages for different patterns:
+
+-   [Cleaning OCR’d text with Regular Expressions](https://programminghistorian.org/en/lessons/cleaning-ocrd-text-with-regular-expressions)
+-   [Regex cheat sheet](https://www.rexegg.com/regex-quickstart.php)
+
+Here are some examples of what you can do with regex.
+
+> Don't worry, you don't need to understand how this all works, but if you click the 'run' button at the left side of the code module it will run the code and show you the results.
+
+## ✏️ *Activity 4: Clean Your Text with Regex*
+
+Example 1: - search and replace where long 's' with modern 's' characters.
+
+"Thiſ iſ my extracted text, but it doeſn't look right"
+
+```{r}
+# identify the text we wish to correct
+test_text <- "Thiſ iſ my extracted text, but it doeſn't look right"
+
+# this is the pattern we want to find with the long 's' character
+pattern <- "ſ"
+
+# substitute the pattern (wrong character) for the right character
+corrected_text <- gsub(pattern, "s", test_text)
+
+# display the result
+cat(corrected_text, "\n")
+```
+
+**Example 2:**
+
+Now we want to clean up the OCR file of the the image. Let's first have a look at the result.
+
+```{r}
+# Define the file to be imported
+filepath <- "https://raw.githubusercontent.com/DCS-training/OCR-From-Images-To-Text-2025/refs/heads/main/Working%20with%20Python/data/ocrtext_1.txt"
+
+# Request the file from the web and read it
+text <- readLines(filepath, warn = FALSE)
+
+# Print the text
+cat(text, sep = "\n")
+
+```
+
+The OCR result is not too bad, but it still needs to be cleaned up with the following steps:
+
+1.  join up words that are split across lines with '-'
+2.  remove the '"' at the begining of the sentences
+
+```{r}
+# Replace '"' in the text with ''
+pattern1 <- '"'
+result <- gsub(pattern1, "", text)
+
+cat("Text after removing '\"':\n\n", result, "\n")
+
+```
+
+```{r}
+# Replace '-' in the text with ''
+pattern2 <- '-'
+result2 <- gsub(pattern2, "", result)
+
+cat("Text after removing '-':\n\n", result2, "\n")
+```
+
+```{r}
+# Replace newline '\n' in the text with ' '
+pattern3 <- '\n'
+result3 <- gsub(pattern3, "", result2)
+
+cat("Text after removing 'next line':\n\n", result3, "\n")
+```
+
+```{r}
+# Use "OR" character "|" in regex to combine different patterns
+# Replace '"' or '-' or '\n' in the text with ''
+pattern <- '"|-|\n'
+result <- gsub(pattern, "", text)
+
+cat("Text after removing '\"':\n\n", result, "\n")
+```
+
+You can also fix the formating by adding a blank space after the punctuation marks.
+
+```{r}
+#install.package("stringr")
+library(stringr)
+
+# The following expression means "," or ";" not followed by a blank space
+pattern4 <- "(,|;)(?! )"
+
+# Replace with comma + space
+result_fixedpunctuation <- str_replace_all(result, pattern4, ", ")
+
+cat("Text after fixing punctuation:\n\n", result_fixedpunctuation, "\n")
+
+```
+
+# 🟢 **OCR with Tesseract (Tesseract)**
+
+Tesseract is an OCR engine developed for various operating systems​ to extract printed text from images. It is of the most accurate open-source OCR engines available​.
+
+## ✏️ *Activity 5: Tesseract*
+
+The following example demonstrate image pre-processing and text extraction using tesseract and magick.
+
+```{r}
+#install.packages("tesseract")
+#install.packages("magick")
+library(tesseract)
+library(magick)
+```
+
+```{r}
+# Read the image from URL
+img <- image_read("https://github.com/DCS-training/OCR-From-Images-To-Text-2025/blob/main/Working%20with%20Python/data/img3.jpg?raw=true")
+
+# Display the image
+plot(img)
+```
+
+Extract the text with Tesseract
+
+```{r}
+eng <- tesseract("eng")
+text <- ocr(img, engine=eng)
+cat(text)
+```
+
+The result shows that only the text "Yellow Text with Black Background" was extracted. Let's try increase the contrast of the colours with imager.
+
+```{r}
+library(magick)
+library(tesseract)
+
+# Read the image
+img <- image_read("https://github.com/DCS-training/OCR-From-Images-To-Text-2025/blob/main/Working%20with%20Python/data/img3.jpg?raw=true")
+
+# Display original
+plot(img)
+
+# 🔧 Enhance contrast
+img_contrast <- image_contrast(img, sharpen = 10)
+
+# Optional: repeat or combine with brightness adjustment
+img_contrast <- image_modulate(img_contrast, brightness = 120, saturation = 500)
+
+# Display adjusted image
+plot(img_contrast)
+
+
+```
+
+```{r}
+
+# Perform OCR
+text <- ocr(img_contrast, engine = eng)
+
+cat(text)
+```
+
+It is not bad but let's see if we can make it better
+
+```{r}
+#install.packages("imager")
+library(imager)
+library(tesseract)
+
+# Step 1 — Load image
+url <- "https://github.com/DCS-training/OCR-From-Images-To-Text-2025/blob/main/Working%20with%20Python/data/img3.jpg?raw=true"
+download.file(url, destfile = "img1.jpg", mode = "wb")
+img <- load.image("img1.jpg")
+
+ 
+# Step 2 — Convert to HSV (Hue, saturation, brightness/value )
+hsv <- RGBtoHSV(img)
+
+# Step 3 - Split the trhee channel
+channels <- imsplit(hsv, "c")
+H <- channels[[1]]
+S <- channels[[2]]
+V <- channels[[3]]
+
+#Step 4 - Look at the different channels
+plot(H, main="Hue channel")
+plot(S, main="Saturation channel")
+plot(V, main="Value channel")
+
+```
+
+The saturation channel seems to be the best option can we use that to read our text better?
+
+```{r}
+# Step 1 — Define threshold
+threshold <- 0.02  #the lower the more precise it is 
+
+# Create binary mask
+S_bin <- imager::threshold(S, thr = threshold)  # threshold automatically gives TRUE/FALSE mask
+
+# Convert logical mask to numeric (0/255)
+S_bin <- S_bin * 255
+
+
+# Display result
+plot(S_bin, main="Binarized Saturation Channel")
+
+# Step 6 — Save and OCR
+save.image(S_bin, "s_bin.png")
+text <- tesseract::ocr("s_bin.png")
+cat(text)
+
+```
+
+Much better! But there are still some issues. You can either lower the threshold or you can use page segmentation
+
+Page segmentation modes:
+
+0 Orientation and script detection (OSD) only.
+
+1 Automatic page segmentation with OSD.
+
+2 Automatic page segmentation, but no OSD, or OCR. (not implemented)
+
+3 Fully automatic page segmentation, but no OSD. (Default)
+
+4 Assume a single column of text of variable sizes.
+
+5 Assume a single uniform block of vertically aligned text.
+
+6 Assume a single uniform block of text.
+
+7 Treat the image as a single text line.
+
+8 Treat the image as a single word.
+
+9 Treat the image as a single word in a circle.
+
+10 Treat the image as a single character.
+
+11 Sparse text. Find as much text as possible in no particular order.
+
+12 Sparse text with OSD.
+
+13 Raw line.
+
+Treat the image as a single text line, bypassing hacks that are Tesseract-specific.
+
+Try a different model to compare result
+
+```{r}
+# Load English language
+eng <- tesseract("eng")
+
+
+text <- image_read("s_bin.png") %>%
+  ocr(engine = tesseract(options = list(tessedit_pageseg_mode = 11)))
+
+
+cat(text)
+
+```
+
+Some packages allows you to visualise the results:
+
+To see it better let's work on a larger amount of text
+
+```{r}
+library(imager)
+library(tesseract)
+
+# Step 1 — Download and load image
+url2 <- "https://github.com/DCS-training/Image-to-Tech-Text-Extraction/blob/main/Github%20Images/Image1.jpg?raw=true"
+download.file(url2, destfile = "img2.jpg", mode = "wb")
+
+
+# Step 3 — Load English OCR engine
+eng <- tesseract("eng")
+
+# Step 4 — OCR directly from file
+Page <- ocr("img2.jpg", engine = eng)
+
+# Step 5 — Output result
+cat(Page)
+
+
+#not too bad let's have a look at the accuracy -----------
+results1 <- tesseract::ocr_data('img2.jpg', engine = eng) #Look at the quality of all scanned bit
+results1
+#Let see the mean of the accuracy 
+mean(results1$confidence)
+
+
+
+```
+
+not too bad can we see where the main issues are?
+
+We can visualise where the issues are
+
+```{r, fig.width=15, fig.height=18}
+#install.packages("tidiverse")
+library(tidyverse)
+#Separate the bbox into a series of variables 
+
+resultsEdit <- results1%>% 
+  separate(bbox, c('Minx', 'Miny', 'Maxx', 'Maxy'))%>% #separate the bbox into 4 values 
+  mutate(Minx=as.integer(Minx),Miny=as.integer(Miny),Maxx=as.integer(Maxx),Maxy=as.integer(Maxy))%>% #save them as full numbers 
+  mutate(MeanX=round((Maxx+Minx)/2), Meany=round((Maxy+Miny)/2))# get the average x and y (pixel)
+
+# Now let's see where the issues are 
+
+ggplot(resultsEdit, aes(MeanX, Meany, colour= confidence)) + #Colour code by confidence 
+  geom_point(shape=15, size=5)+#plot them as squared points 
+  scale_y_reverse()+ # because we want it to look like our page the origin of the axis need to be top left rather than bottom left 
+  scale_colour_continuous(low="red", high="green") + #Create a continous scale from green to red to colour-code the results 
+  theme_bw()+ # b/w background 
+  geom_text(label=resultsEdit$word, colour="black", size=7)#plot the words on top
+
+
+```
+
+# 🟢 **Handwritten Text Recognition**
+
+**H**andrwitten **T**ext **R**ecognition (HTR) is another method of text extraction, although it is in the earlier stages of development than OCR is. Unlike OCR, which is best used on printed text, HTR engines are designed to be run on handwritten text and often use machine learning models to intelligently recognise text.
+
+## ✏️ *Activity 5*
+
+[Transkribus](https://readcoop.eu/transkribus/) is one of the leading options in HTR; although designed for handwritten text, it can also be used on printed text.
+
+-   Try uploading an image (PNG or JPG) of handwritten and/or printed text to their website <https://readcoop.eu/transkribus/>
+
+-   How does changing the language used impact your results?
+
+\*\*Disclaimer\*: Transkribus operates on a paid credit model, but the test option outlined above is free. Sign up is free and includes a small number of credits when [joining](https://readcoop.eu/transkribus/credits/).
+
+# **Resources List**
+
+**Tutorials**
+
+Centre for Data, Culture and Society. "Text Extraction & Preparation," Managing Digitised Documents (2022), <https://www.cdcs.ed.ac.uk/training/training-pathways/managing-digitised-documents-pathway> [accessed 23 July 2023].
+
+Knox, Doug. "Understanding Regular Expressions," Programming Historian 2 (2013), <https://doi.org/10.46430/phen0033> [accessed 23 July 2023].
+
+Turner O'Hara, Laura. "Cleaning OCR’d text with Regular Expressions," Programming Historian 2 (2013), <https://doi.org/10.46430/phen0024> [accessed 23 July 2023].
+
+Library Carpentry. "Introduction to Working with Data (Regular Expressions)" (2023), <https://librarycarpentry.org/lc-data-intro/01-regular-expressions.html> [accessed 23 July 2023].
+
+"Regular Expressions Cheat Sheet" by Davidchild, <https://cheatography.com/davechild/cheat-sheets/regular-expressions/> [accessed 10 Sep 2025]
+
+**Readings**
+
+Cordell, Ryan. ‘“Q i-Jtb the Raven”: Taking Dirty OCR Seriously’. Book History 20, no. 1 (2017): 188–225. <https://doi.org/10.1353/bh.2017.0006> [accessed 23 July 2023].
+
+Schantz, Herbert F. The History of OCR, Optical Character Recognition. [Manchester Center, Vt.] : Recognition Technologies Users Association, (1982) <http://archive.org/details/historyofocropti0000scha> [accessed 23 July 2023].
+
+# **Activity Notes**
+
+## ✏️ Activity 1
+
+Even if you have not heard of OCR or are not sure if you have used it, you probably have! Here are some real-world examples of text recognition uses:
+
+-   Using the airport’s e-Passport Gates
+-   Translating text with language recognition
+-   Searching a digital database of historical public records
+-   Searching a PDF file
+
+## ✏️ Activity 2
+
+If you are not sure what to choose as your dataset, imagine you are digitising a book; think of your favourite book or try browsing the following website to find examples you could use:
+
+-   <https://openbooks.is.ed.ac.uk/>
+
+Don't forget that the type of materials you choose will impact your OCR, and different material types might need slightly different considerations for selecting OCR software or anticipating problems.
+
+## ✏️ Activity 3
+
+This list is not exhaustive but will cover some of the potential issues you might have picked out:
+
+Document 1:
+
+-   There are marks on the top left of the page that might be picked up by accident
+-   The text uses the long 's' form that may be mistaken for an 'f'
+-   You can see text coming through from other pages, depending on the OCR engine, this could be picked up
+-   Sometimes spacing between letters can cause issues, and the individual letters will be picked up rather than the entire word, for example with 'PETITION'
+
+Overall the image is clear, there is a good light balance and the text is quite straight on the page.
+
+Document 2:
+
+-   There are lots of marks and darlk spots on the page that may be picked up by the text recognition
+-   There are lots of creases in the page, meaning that some of the lettering is a little warped and may not be picked up correctly
+-   There is some text coming through from the other side of the page, although this is not as dark as in the previous example
+-   Some of the writing is very small and appears to be smudged in printing, which may mean that letters are misrecognised
+
+Overall, the text looks clear in some places, however the physical condition of the item is likely to impact the OCR done on this item due to the creases and marks on the page.
+
+## ✏️ Activity 4
+
+Any text extraction software or programme you decide to use will need to be evaluated - was it effective for the materials, or if not, why not? The limitations of OCR outputs are important to consider too - if you are only looking at a small quantity of text then you may be able to manually correct as much as you need to. If you are working with larger quantities of text this may not be the case and you will need to choose the best-performing option and do additional clean up with programming, or establish a suitable level of acceptable errors.
+
+## ✏️ Activity 5
+
+As shown in this example, image pre-processing can help improve the performace of OCR text extraction. However, when dealing with a large database, the type of the errors or "noise" in the data can vary and therefore requires a combination of techniques to extract the text successfully.
+
+## ✏️ Activity 6
+
+Transkribus has models designed for handwriting and print because they are trained on either handwritten text or printed text, to produce the vest results possible for the different types of materials. The same goes for different languages and some of the models distinguish between different fonts or handwriting types. If you play around with the model types and images you use, you should see a difference in output quality.
