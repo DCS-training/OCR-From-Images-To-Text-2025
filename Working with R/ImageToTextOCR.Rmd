@@ -18,7 +18,7 @@ This course provides an overview of Optical Character Recognition (OCR), an imag
 The resource covers the following sections to help you learn and start to apply OCR in research practice:
 
 -   What is text extraction and OCR?
--   What are the real-world application of OCR?
+-   What are the real-world applications of OCR?
 -   What challenges might you face when using OCR and how can you address them?
 
 We will learn the fundamental concepts and implement OCR techniques through the following activities:
@@ -235,7 +235,7 @@ cat(corrected_text, "\n")
 
 **Example 2:**
 
-Now we want to clean up the OCR file of the the image. Let's first have a look at the result.
+Now we want to clean up the OCR file of the image. Let's first have a look at the result.
 
 ```{r}
 # Define the file to be imported
@@ -251,8 +251,8 @@ cat(text, sep = "\n")
 
 The OCR result is not too bad, but it still needs to be cleaned up with the following steps:
 
-1.  join up words that are split across lines with '-'
-2.  remove the '"' at the begining of the sentences
+1.  Join up words that are split across lines with '-'
+2.  Remove the '"' at the beginning of the sentences
 
 ```{r}
 # Replace '"' in the text with ''
@@ -313,7 +313,7 @@ Tesseract is an OCR engine developed for various operating systems​ to extract
 The following example demonstrate image pre-processing and text extraction using tesseract and magick.
 
 ```{r}
-install.packages("tesseract")
+#install.packages("tesseract")
 #install.packages("magick")
 library(tesseract)
 library(magick)
@@ -335,9 +335,9 @@ text <- ocr(img, engine=eng)
 cat(text)
 ```
 
-## Text recognision in different/multiple languages
+## Text recognition in different/multiple languages
 
-So far we used just the English as language recognition package. However, many more languages are supported.
+So far, we have used just English as a language recognition package. However, many more languages are supported.
 
 The first thing you can do is check which languages you have already installed
 
@@ -345,13 +345,27 @@ The first thing you can do is check which languages you have already installed
 tesseract_info()
 ```
 
-By default the R package only includes English training data. Windows and Mac users can install additional training data using tesseract_download()
+By default, the R package only includes English training data. Windows and Mac users can install additional training data using tesseract_download().
 
 ```{r}
+# You can uncomment this if you are working locally
 # Only need to do download once:
-tesseract_download("nld")
+#tesseract_download("nld")
 # Now load the dictionary
-dutch <- tesseract("nld")
+#dutch <- tesseract("nld")
+```
+
+Unfortunately, because we are working on a Linux server for which we do not have admin permissions, we need to use a workaround.
+
+1.  On the terminal, run 'bash install_tessdata.sh'
+
+2.  If you open the install_tessdata.sh by double-clicking on it, you can see that it basically contains instructions on which language data to download and where to save them. Because we do not have writing permissions for the standard folder where training data gets stored, we need to create a new ad hoc folder 'tessdata'
+
+3.  This also means that when we need to use specific train datasets, we need to specify where they can be found
+
+```{r}
+# Load the dictionary
+dutch <- tesseract("nld", datapath = "~/tessdata")#note that we needed to specify the path 
 ```
 
 -   Check language package information: [Here](https://tesseract-ocr.github.io/tessdoc/Data-Files-in-different-versions.html)
@@ -366,13 +380,13 @@ img <- image_read("Data/img_chi_tra.jpg")
 plot(img)
 ```
 
-Now we download and load the chinese langauge trained data
+Now we load the Chinese language trained data that we have already downloaded via the terminal earlier
 
 ```{r}
-# Only need to do download once:
-tesseract_download("chi_tra")
+# Below how to download it if you are working locally
+#tesseract_download("chi_tra")
 # Now load the dictionary
-Chinese <- tesseract("chi_tra")
+Chinese <- tesseract("chi_tra", datapath = "~/tessdata")
 ```
 
 ```{r}
@@ -384,7 +398,7 @@ You can also specify multiple languages
 
 ```{r}
 # Now load the dictionary
-Mixed <- tesseract(c("chi_sim","eng"))
+Mixed <- tesseract(c("chi_tra","eng"), datapath = "~/tessdata")
 ```
 
 ```{r}
@@ -396,27 +410,32 @@ plot(img)
 ```
 
 ```{r}
+text <- ocr(img)
+cat(text)
+```
+
+```{r}
 text <- ocr(img, engine=Mixed)
 cat(text)
 ```
 
-Note that the the time taken for OCR as well as the output can be different based on the order of languages. If language is not specified, it would be English by default.
+Note that the time taken for OCR, as well as the output, can be different based on the order of languages. If language is not specified, it would be English by default.
 
-Now let's try changing the order of the languages in lang argument and compare the results:
+Now let's try changing the order of the languages in the lang argument and compare the results:
 
-First we download the japanese data
+First, we download the Japanese data if you are working locally otherwise we have already done it via bash earlier
 
 ```{r}
 # Only need to do download once:
-tesseract_download("jpn")
+#tesseract_download("jpn")
 ```
 
 Then we create different engines combining data and we used them to check the results
 
 ```{r}
-Chinese<- tesseract("chi_tra")
-ChineseJap<- tesseract(c("chi_tra", "jpn"))
-ChinJapEng<- tesseract(c("chi_tra", "jpn", "eng"))
+Chinese<- tesseract("chi_tra", datapath = "~/tessdata")
+ChineseJap<- tesseract(c("chi_tra", "jpn"), datapath = "~/tessdata")
+ChinJapEng<- tesseract(c("chi_tra", "jpn", "eng"), datapath = "~/tessdata")
 
 text1 <- ocr(img, engine=Chinese)
 text2 <- ocr(img, engine=ChineseJap)
@@ -452,13 +471,14 @@ By default Tesseract expects a page of text when it segments an image. If you’
 
 From the previous example, it might help to specify that the texts are arranged in single lines of blocks:
 
-Try update the config arguement using config = "--psm ?" to get a better result
+Try updating the config argument using config = 11"Sparse text. Find as much text as possible in no particular order" to get a better result
 
 ```{r}
 # Create the engine with options
 ChinJapEngLines <- tesseract(
-  language = "chi_sim+jpn+eng",
-  options = list(tessedit_pageseg_mode = 11)
+  language = "chi_tra+jpn+eng",
+  options = list(tessedit_pageseg_mode = 11),
+  datapath = "~/tessdata"
 )
 
 # Then run OCR
@@ -468,10 +488,10 @@ cat(text)
 
 ```
 
-Now let's tray with another image
+Now let's try with another image
 
 ```{r}
-# Read the image from URL
+# Read the image 
 img <- image_read("Data/img_blocks.jpg")
 
 # Display the image
@@ -479,11 +499,10 @@ plot(img)
 ```
 
 ```{r}
-# Load English language
-eng <- tesseract("eng")
 
 # Create an OCR engine with English language and page segmentation mode 3
-eng_engine <- tesseract(language = "eng", options = list(tessedit_pageseg_mode = 3))
+eng_engine <- tesseract(language = "eng", options = list(tessedit_pageseg_mode = 3),,
+  datapath = "~/tessdata")
 
 # Run OCR on the image
 ocr_text <- ocr(img, engine = eng_engine)
@@ -526,39 +545,86 @@ cat(ocr_text)
 
 ## Colour correction
 
-Note that the UoE logo has a lighter colour which fails to be detected as characters. Another common way to improve ORC quality is coulour correction.
+### Colour conversion
 
-Note
+-   COLOR_RGB2BGR remove alpha (transparent) channel from image
 
-### Colour convertion
+-   COLOR_BGR2GRAY converts the image to a grey scale
 
--   COLOR_RGB2BGR remove alpha (transparent) chanell from image
+```{r}
 
--   COLOR_BGR2GRAY conver image to grey scale
+library(magick)
+library(imager)
+library(tesseract)
+
+# 1. Load the image
+img <- image_read("Data/img_shadow.jpg")
+
+# 2. Display the original image
+plot(img)  
+
+# 3. Convert to grayscale
+gray_img <- image_convert(img, colorspace = "gray")
+
+# 4. Display the grayscale image
+plot(gray_img)
+```
+
+```{r}
+eng <- tesseract("eng")
+text <- ocr(gray_img, engine=eng)
+cat(text)
+```
 
 ### Thresholding
 
 -   [Threshholding](https://cran.r-project.org/web/packages/autothresholdr/vignettes/thresholding-images.html)
 
+First, we need to convert to CIMG, but there is no easy way to do so. Below, there is a function we can define to do so
+
 ```{r}
-#install.packages("magick")
-#install.packages("imager")
-#install.packages("autothresholdr")
-#install.packages("tesseract")
-library(magick)
-library(imager)
-library(autothresholdr)
-library(tesseract)
+
+library(magick)     # For image reading, conversion, and processing
+library(tesseract)  # For performing Optical Character Recognition (OCR)
+
+# --- IMAGE PREPROCESSING PIPELINE ---
+img <- image_read("Data/img_shadow.jpg") %>%     # 1 Read the image from file
+  image_convert(colorspace = "gray")  %>%            # 2 Convert the image to grayscale
+  image_threshold(type = "white", threshold = "50%")  # 3 Apply binary thresholding:
+                                                      #    - pixels above 50% brightness → white (255)
+                                                      #    - pixels below 50% brightness → black (0)
+                                                      #  This helps improve OCR accuracy by removing background noise
+
+# --- OCR EXTRACTION ---
+text <- ocr(img)  # 4 Use Tesseract to extract text from the preprocessed image
+
+# --- OUTPUT ---
+cat(text)         # 5 Print recognized text to the R console
+
+# --- LOOK AT THE IMAGE--- 
+plot(img)
 ```
 
+What do you think is it any better?
+
+There are many more options when it comes to thresholding using Python using the Cv2 library (please have a look at the other notebook).
+
+# **Key takeaway from this section**
+
+Imgage pre-processing in ocr can improve the accuracy significantly. However, there is no universal solution or recipe to pre-process your data. It is essential to analyse your data and identify the patterns and sources of errors that can be pre-processed.
+
+In the Python Notebook, you can also find a workflow to use what we cover so far to help with vertically oriented and skewed text. Unfortunately, it is not fully possible to replicate it in R, so please have a look at <https://github.com/DCS-training/OCR-From-Images-To-Text-2025/blob/main/Working%20with%20Python/ImageToTextOCR.ipynb>
+
+What we can do in R is to play a bit more with contrast, brightness and saturation to do so let's try with a new image
+
 ```{r}
 
 library(tesseract)
+# 1. Load the image
+img <- image_read("Data/img3.jpg")
 
-
-
-
-
+# 2. Display the original image
+plot(img)  
 
 # 🔧 Enhance contrast
 img_contrast <- image_contrast(img, sharpen = 10)
@@ -575,7 +641,7 @@ plot(img_contrast)
 ```{r}
 
 # Perform OCR
-text <- ocr(img_contrast, engine = eng)
+text <- ocr(img_contrast)
 
 cat(text)
 ```
@@ -613,7 +679,7 @@ The saturation channel seems to be the best option can we use that to read our t
 
 ```{r}
 # Step 1 — Define threshold
-threshold <- 0.02  #the lower the more precise it is 
+threshold <- 0.01  #the lower the more precise it is 
 
 # Create binary mask
 S_bin <- imager::threshold(S, thr = threshold)  # threshold automatically gives TRUE/FALSE mask
@@ -632,54 +698,9 @@ cat(text)
 
 ```
 
-Much better! But there are still some issues. You can either lower the threshold or you can use page segmentation
+Much better! But there are still some issues. You can try to lower the threshold
 
-Page segmentation modes:
-
-0 Orientation and script detection (OSD) only.
-
-1 Automatic page segmentation with OSD.
-
-2 Automatic page segmentation, but no OSD, or OCR. (not implemented)
-
-3 Fully automatic page segmentation, but no OSD. (Default)
-
-4 Assume a single column of text of variable sizes.
-
-5 Assume a single uniform block of vertically aligned text.
-
-6 Assume a single uniform block of text.
-
-7 Treat the image as a single text line.
-
-8 Treat the image as a single word.
-
-9 Treat the image as a single word in a circle.
-
-10 Treat the image as a single character.
-
-11 Sparse text. Find as much text as possible in no particular order.
-
-12 Sparse text with OSD.
-
-13 Raw line.
-
-Treat the image as a single text line, bypassing hacks that are Tesseract-specific.
-
-Try a different model to compare result
-
-```{r}
-# Load English language
-eng <- tesseract("eng")
-
-
-text <- image_read("s_bin.png") %>%
-  ocr(engine = tesseract(options = list(tessedit_pageseg_mode = 11)))
-
-
-cat(text)
-
-```
+## Visualisation of errors
 
 Some packages allows you to visualise the results:
 
